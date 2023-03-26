@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Dummy Email Generator</title>
+      <style>
+          body {
+              font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+          }
+
+         h1 {
+         font-size: 2em;
+         text-align: center;
+         color: #444;
+         }
+         form {
+         width: 50%;
+         margin: 0 auto;
+         background-color: #f2f2f2;
+         padding: 20px;
+         border-radius: 10px;
+         }
+         label {
+         display: block;
+         margin-bottom: 10px;
+         color: #444;
+         }
+         input[type="text"] {
+         width: 100%;
+         padding: 10px;
+         border: none;
+         border-radius: 4px;
+         margin-bottom: 20px;
+         }
+         button {
+         background-color: #4CAF50;
+         color: white;
+         padding: 10px 20px;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+         }
+         button:hover {
+         background-color: #3e8e41;
+         }
+         #copyButton {
+         margin-left: 10px;
+         background-color: #ccc;
+         cursor: default;
+         }
+         #copyButton:hover {
+         background-color: #ccc;
+         }
+         #copyButton:enabled {
+         background-color: #4CAF50;
+         cursor: pointer;
+         }
+         #copyButton:enabled:hover {
+         background-color: #3e8e41;
+         }
+         #result {
+         margin-top: 20px;
+         font-size: 1.2em;
+         color: #444;
+         }
+      </style>
+   </head>
+   <body>
+      <h1>Dummy Email Generator</h1>
+      <form>
+         <label for="domain">Email Domain:</label>
+         <input type="text" id="domain" name="domain" value="@snapmail.com" readonly>
+         <br>
+         <button type="button" onclick="generateEmail()">Generate Email</button>
+         <button type="button" onclick="copyEmail()" id="copyButton" disabled>Copy Email</button>
+      </form>
+      <p id="result"></p>
+      <script>
+         function generateEmail() {
+           const domain = document.getElementById("domain").value.trim().toLowerCase();
+           const randomString = Math.random().toString(36).substring(2, 8);
+           const email = `${randomString}${domain}`;
+           document.getElementById("result").textContent = `Generated email: ${email}`;
+           document.getElementById("copyButton").disabled = false;
+           window.emailToCopy = email;
+         }
+         
+         function copyEmail() {
+           const emailToCopy = window.emailToCopy;
+           const textarea = document.createElement("textarea");
+           textarea.value = emailToCopy;
+           document.body.appendChild(textarea);
+           textarea.select();
+           document.execCommand("copy");
+           document.body.removeChild(textarea);
+           alert(`Copied email to clipboard: ${emailToCopy}`);
+         }
+         
+      </script>
+   </body>
+</html>
