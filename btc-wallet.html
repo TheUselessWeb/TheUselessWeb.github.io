@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Bitcoin Wallet Simulator</title>
+      <style>
+         .wallet {
+         width: 500px;
+         margin: auto;
+         padding: 20px;
+         border: 2px solid black;
+         font-family: Arial, sans-serif;
+         text-align: center;
+         }
+         .wallet h1 {
+         font-size: 36px;
+         margin: 0;
+         }
+         .wallet h2 {
+         font-size: 24px;
+         margin: 20px 0 10px 0;
+         }
+         .balance {
+         border: 2px solid black;
+         padding: 10px;
+         margin-bottom: 20px;
+         }
+         .transaction {
+         border: 2px solid black;
+         padding: 10px;
+         }
+         .transaction-input {
+         margin-bottom: 10px;
+         text-align: left;
+         }
+         .transaction-input label {
+         display: inline-block;
+         width: 100px;
+         font-weight: bold;
+         }
+         .transaction-input input {
+         border: 2px solid black;
+         padding: 5px;
+         }
+         .transaction-btns {
+         margin-top: 20px;
+         }
+         #send-btn {
+         background-color: orange;
+         color: white;
+         padding: 10px;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+         margin-right: 10px;
+         }
+         #receive-btn {
+         background-color: orange;
+         color: white;
+         padding: 10px;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+         }
+      </style>
+   </head>
+   <body>
+      <div class="wallet">
+         <h1>Bitcoin Wallet Simulator</h1>
+         <div class="balance">
+            <h2>Balance: <span id="balance">0</span> BTC</h2>
+            <button id="refresh-btn" onclick="refreshBalance()">Refresh</button>
+         </div>
+         <div class="transaction">
+            <h2>Transaction</h2>
+            <div class="transaction-input">
+               <label for="recipient">Recipient:</label>
+               <input type="text" id="recipient">
+            </div>
+            <div class="transaction-input">
+               <label for="amount">Amount:</label>
+               <input type="number" id="amount">
+            </div>
+            <div class="transaction-input">
+               <label for="fee">Transaction Fee:</label>
+               <input type="number" id="fee" value="0.001">
+            </div>
+            <div class="transaction-btns">
+               <button id="send-btn" onclick="send()">Send</button>
+               <button id="receive-btn" onclick="receive()">Receive</button>
+            </div>
+         </div>
+      </div>
+      <script>
+         let balance = 0;
+         
+         function refreshBalance() {
+           document.getElementById("balance").innerHTML = balance;
+         }
+         
+         function send() {
+           const recipient = document.getElementById("recipient").value;
+           const amount = parseFloat(document.getElementById("amount").value);
+            const fee = parseFloat(document.getElementById("fee").value);
+           if (amount + fee > balance) {
+             alert("Insufficient balance!");
+             return;
+           }
+           balance -= amount + fee;
+           refreshBalance();
+           alert(`Sent ${amount} BTC to ${recipient} with ${fee} BTC fee.`);
+         }
+         
+         function receive() {
+           const amount = parseFloat(prompt("Enter the amount to receive:"));
+           if (isNaN(amount) || amount <= 0) {
+             alert("Invalid amount!");
+             return;
+           }
+           balance += amount;
+           refreshBalance();
+           alert(`Received ${amount} BTC.`);
+         }
+         
+      </script>
+   </body>
+</html>
