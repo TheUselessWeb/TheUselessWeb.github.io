@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Video</title>
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .view-count {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .buttons-container {
+      margin-top: 10px;
+    }
+    .button {
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    .input-container {
+      margin-top: 10px;
+      display: none;
+    }
+    .toggle-options {
+      margin-top: 10px;
+      cursor: pointer;
+      color: blue;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="video-container">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <p class="view-count" id="counter">0 views</p>
+    <div class="buttons-container">
+      <button class="button" id="toggleButton">Start</button>
+    </div>
+    <div class="input-container">
+      <label for="minIncrease">Minimum Increase:</label>
+      <input type="number" id="minIncrease" value="10">
+    </div>
+    <div class="input-container">
+      <label for="maxIncrease">Maximum Increase:</label>
+      <input type="number" id="maxIncrease" value="20">
+    </div>
+    <div class="toggle-options" id="toggleOptions" onclick="toggleOptions()">Show Options</div>
+  </div>
+
+  <script>
+    var counterValue = 0;
+    var timerId;
+
+    function toggleCounter() {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+        document.getElementById("toggleButton").textContent = "Resume";
+      } else {
+        var minIncrease = parseInt(document.getElementById("minIncrease").value);
+        var maxIncrease = parseInt(document.getElementById("maxIncrease").value);
+        timerId = setInterval(function() {
+          incrementCounter(minIncrease, maxIncrease);
+        }, 100);
+        document.getElementById("toggleButton").textContent = "Pause";
+      }
+    }
+
+    function incrementCounter(minIncrease, maxIncrease) {
+      var randomAmount = Math.floor(Math.random() * (maxIncrease - minIncrease + 1)) + minIncrease;
+      counterValue += randomAmount;
+      document.getElementById("counter").textContent = formatNumber(counterValue) + " views";
+    }
+
+    function formatNumber(number) {
+      return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    function toggleOptions() {
+      var options = document.getElementsByClassName("input-container");
+      var displayValue = options[0].style.display === "none" ? "block" : "none";
+      for (var i = 0; i < options.length; i++) {
+        options[i].style.display = displayValue;
+      }
+      var toggleText = document.getElementById("toggleOptions");
+      toggleText.textContent = displayValue === "none" ? "Show Options" : "Hide Options";
+    }
+
+    document.getElementById("toggleButton").addEventListener("click", toggleCounter);
+  </script>
+</body>
+</html>
