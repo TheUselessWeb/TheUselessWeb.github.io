@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Night Sky</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+            cursor: default;
+        }
+
+        #nightSkyCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+
+        #starInfo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        #introScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #introScreen h1 {
+            font-family: 'Roboto', sans-serif;
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        #introScreen input {
+            font-family: 'Roboto', sans-serif;
+            font-size: 18px;
+            padding: 8px;
+            margin-bottom: 10px;
+            width: 200px;
+        }
+
+        #playButton {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="nightSkyCanvas"></canvas>
+    <div id="starInfo"></div>
+
+    <div id="introScreen">
+        <h1>SolarSim</h1>
+        <input type="number" id="starCountInput" placeholder="Number of Stars">
+        <button id="playButton">Play</button>
+    </div>
+
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById('nightSkyCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas dimensions to match window size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Generate random color for stars
+        function randomColor() {
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = Math.floor(Math.random() * 101);
+            const lightness = Math.floor(Math.random() * 51) + 50;
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+        }
+
+        // Generate a random star name
+        function generateStarName() {
+            const randomNumber = Math.floor(Math.random() * 100000) + 1;
+            const randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+            return `P-${randomNumber}-${randomLetter}`;
+        }
+
+        // Generate a random star size for the info
+        function generateStarSize() {
+            const randomSize = Math.floor(Math.random() * 500) + 1;
+            return randomSize.toLocaleString();
+        }
+
+        // Generate a random star age for the info
+        function generateStarAge() {
+            const randomAge = Math.floor(Math.random() * 100000000) + 1;
+            return randomAge.toLocaleString();
+        }
+
+        // Star class representing a star in the night sky
+        class Star {
+            constructor(x, y, size, color) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.color = color;
+                this.name = generateStarName();
+                this.infoSize = generateStarSize();
+                this.infoAge = generateStarAge();
+            }
+
+            // Draw the star on the canvas
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+
+            // Check if the star is clicked by the user
+            isClicked(x, y) {
+                const dx = x - this.x;
+                const dy = y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance <= this.size;
+            }
+        }
+
+        // Array to store the stars
+        const stars = [];
+
+        // Generate the night sky
+        function generateNightSky(starCount) {
+            // Generate stars
+            for (let i = 0; i < starCount; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 3 + 1;
+                const color = randomColor();
+                stars.push(new Star(x, y, size, color));
+            }
+        }
+
+        // Render the night sky
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (const star of stars) {
+                star.draw();
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        // Handle click events on the canvas
+        canvas.addEventListener('click', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            // Check if a star is clicked
+            for (const star of stars) {
+                if (star.isClicked(x, y)) {
+                    // Display star info in the container
+                    showStarInfo(star);
+                    break;
+                }
+            }
+        });
+
+        // Show the star's information in the info container
+        function showStarInfo(star) {
+            const infoContainer = document.getElementById('starInfo');
+            infoContainer.innerHTML = `
+                <h2>Star Information</h2>
+                <p><strong>Name:</strong> ${star.name}</p>
+                <p><strong>Size:</strong> ${star.infoSize} km</p>
+                <p><strong>Age:</strong> ${star.infoAge} years</p>
+            `;
+            infoContainer.style.display = 'block';
+            canvas.style.cursor = 'default';
+        }
+
+        // Hide the star info container
+        function hideStarInfo() {
+            const infoContainer = document.getElementById('starInfo');
+            infoContainer.style.display = 'none';
+            canvas.style.cursor = 'default';
+        }
+
+        // Generate the night sky on page load
+        // generateNightSky();
+
+        // Regenerate the night sky on window resize
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            generateNightSky();
+            hideStarInfo();
+        });
+
+        // Show the intro screen
+        const introScreen = document.getElementById('introScreen');
+        const playButton = document.getElementById('playButton');
+        playButton.addEventListener('click', function() {
+            const starCountInput = document.getElementById('starCountInput');
+            const starCount = parseInt(starCountInput.value) || 500; // Default to 500 stars if no input
+            introScreen.style.display = 'none';
+            canvas.style.display = 'block';
+            generateNightSky(starCount);
+            render();
+        });
+    </script>
+</body>
+</html>
