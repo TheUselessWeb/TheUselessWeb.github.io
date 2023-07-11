@@ -1,126 +1,227 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <title>Bitcoin Wallet Simulator</title>
-      <style>
-         .wallet {
-         width: 500px;
-         margin: auto;
-         padding: 20px;
-         border: 2px solid black;
-         font-family: Arial, sans-serif;
-         text-align: center;
-         }
-         .wallet h1 {
-         font-size: 36px;
-         margin: 0;
-         }
-         .wallet h2 {
-         font-size: 24px;
-         margin: 20px 0 10px 0;
-         }
-         .balance {
-         border: 2px solid black;
-         padding: 10px;
-         margin-bottom: 20px;
-         }
-         .transaction {
-         border: 2px solid black;
-         padding: 10px;
-         }
-         .transaction-input {
-         margin-bottom: 10px;
-         text-align: left;
-         }
-         .transaction-input label {
-         display: inline-block;
-         width: 100px;
-         font-weight: bold;
-         }
-         .transaction-input input {
-         border: 2px solid black;
-         padding: 5px;
-         }
-         .transaction-btns {
-         margin-top: 20px;
-         }
-         #send-btn {
-         background-color: orange;
-         color: white;
-         padding: 10px;
-         border: none;
-         border-radius: 5px;
-         cursor: pointer;
-         margin-right: 10px;
-         }
-         #receive-btn {
-         background-color: orange;
-         color: white;
-         padding: 10px;
-         border: none;
-         border-radius: 5px;
-         cursor: pointer;
-         }
-      </style>
-   </head>
-   <body>
+<head>
+  <title>Bitcoin Wallet Simulator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+  
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+  
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+  
+    .login, .wallet, .transaction {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  
+    .login h2, .wallet h2, .transaction h2 {
+      color: #333;
+    }
+  
+    .login input, .transaction input {
+      display: block;
+      width: 96%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+  
+    .login button, .transaction button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      color: #fff;
+      background-color: #333;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+  
+    .login button:hover, .transaction button:hover {
+      background-color: #555;
+    }
+  
+    #walletAddress, #walletBalance {
+      font-weight: bold;
+      color: #333;
+    }
+  
+    #walletBalanceUSD {
+      color: #777;
+      font-size: smaller;
+    }
+  
+    .calculator {
+      margin-top: 20px;
+    }
+  
+    .calculator input {
+      display: block;
+      width: 96%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+  
+    .calculator button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      color: #fff;
+      background-color: #333;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+  
+    .calculator button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="login">
+      <h2>Login</h2>
+      <input type="text" id="walletAddressInput" placeholder="Wallet Address">
+      <button onclick="login()">Login</button>
+    </div>
+    <div id="walletPage" style="display: none;">
+      <h1>Bitcoin Wallet Simulator</h1>
       <div class="wallet">
-         <h1>Bitcoin Wallet Simulator</h1>
-         <div class="balance">
-            <h2>Balance: <span id="balance">0</span> BTC</h2>
-            <button id="refresh-btn" onclick="refreshBalance()">Refresh</button>
-         </div>
-         <div class="transaction">
-            <h2>Transaction</h2>
-            <div class="transaction-input">
-               <label for="recipient">Recipient:</label>
-               <input type="text" id="recipient">
-            </div>
-            <div class="transaction-input">
-               <label for="amount">Amount:</label>
-               <input type="number" id="amount">
-            </div>
-            <div class="transaction-input">
-               <label for="fee">Transaction Fee:</label>
-               <input type="number" id="fee" value="0.001">
-            </div>
-            <div class="transaction-btns">
-               <button id="send-btn" onclick="send()">Send</button>
-               <button id="receive-btn" onclick="receive()">Receive</button>
-            </div>
-         </div>
+        <h2>My Wallet</h2>
+        <p>Address: <span id="walletAddress"></span></p>
+        <p>Balance: <span id="walletBalance"></span> <span id="walletBalanceUSD"></span></p>
       </div>
-      <script>
-         let balance = 0;
-         
-         function refreshBalance() {
-           document.getElementById("balance").innerHTML = balance;
-         }
-         
-         function send() {
-           const recipient = document.getElementById("recipient").value;
-           const amount = parseFloat(document.getElementById("amount").value);
-            const fee = parseFloat(document.getElementById("fee").value);
-           if (amount + fee > balance) {
-             alert("Insufficient balance!");
-             return;
-           }
-           balance -= amount + fee;
-           refreshBalance();
-           alert(`Sent ${amount} BTC to ${recipient} with ${fee} BTC fee.`);
-         }
-         
-         function receive() {
-           const amount = parseFloat(prompt("Enter the amount to receive:"));
-           if (isNaN(amount) || amount <= 0) {
-             alert("Invalid amount!");
-             return;
-           }
-           balance += amount;
-           refreshBalance();
-           alert(`Received ${amount} BTC.`);
-         }
-         
-      </script>
-   </body>
+      <div class="transaction">
+        <h2>Create Transaction</h2>
+        <input type="text" id="recipientAddress" placeholder="Recipient Address">
+        <input type="number" id="amount" placeholder="Amount (BTC)">
+        <button onclick="createTransaction()">Send</button>
+      </div>
+      <div class="transaction">
+        <h2>Transaction History</h2>
+        <ul id="transactionHistory"></ul>
+      </div>
+      <div class="calculator">
+        <h2>Bitcoin Calculator</h2>
+        <input type="number" id="usdAmount" placeholder="USD Amount">
+        <button onclick="convertToBitcoin()">Convert to BTC</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Simulated wallet data
+    var wallet = {
+      address: '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy',
+      balance: 0,
+      transactions: []
+    };
+  
+    // Show wallet page after successful login
+    function login() {
+      var walletAddressInput = document.getElementById('walletAddressInput').value;
+  
+      // Validate wallet address (dummy validation)
+      if (walletAddressInput.trim() === '') {
+        alert('Please enter a valid wallet address.');
+        return;
+      }
+  
+      // Update wallet information with user input
+      wallet.address = walletAddressInput;
+      wallet.balance = getRandomBalance();
+  
+      // Update wallet page elements
+      document.getElementById('walletAddress').textContent = wallet.address;
+      document.getElementById('walletBalance').textContent = formatBalance(wallet.balance) + ' BTC';
+      document.getElementById('walletBalanceUSD').textContent = '(' + formatBalanceToUSD(wallet.balance) + ')';
+  
+      // Show wallet page and hide login
+      document.getElementById('walletPage').style.display = 'block';
+      document.getElementsByClassName('login')[0].style.display = 'none';
+    }
+  
+    // Create a new transaction
+    function createTransaction() {
+      var recipientAddress = document.getElementById('recipientAddress').value;
+      var amount = parseFloat(document.getElementById('amount').value);
+  
+      // Simulate sending transaction
+      wallet.transactions.push({
+        recipient: recipientAddress,
+        amount: amount
+      });
+  
+      wallet.balance -= amount;
+      updateWalletInfo();
+      displayTransactionHistory();
+    }
+  
+    // Display transaction history
+    function displayTransactionHistory() {
+      var transactionHistory = document.getElementById('transactionHistory');
+      transactionHistory.innerHTML = '';
+  
+      wallet.transactions.forEach(function(transaction) {
+        var li = document.createElement('li');
+        li.textContent = 'Sent ' + transaction.amount + ' BTC to ' + transaction.recipient;
+        transactionHistory.appendChild(li);
+      });
+    }
+  
+    // Convert USD amount to Bitcoin
+    function convertToBitcoin() {
+      var usdAmount = parseFloat(document.getElementById('usdAmount').value);
+  
+      if (isNaN(usdAmount)) {
+        alert('Please enter a valid USD amount.');
+        return;
+      }
+  
+      var bitcoinAmount = usdAmount / 30000;
+      alert(formatBalance(bitcoinAmount) + ' BTC');
+    }
+  
+    // Format balance without commas
+    function formatBalance(balance) {
+      return balance.toFixed(8);
+    }
+  
+    // Format balance to USD with commas
+    function formatBalanceToUSD(balance) {
+      var usdAmount = balance * 30000;
+      return '$' + usdAmount.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    }
+  
+    // Generate random balance between 0.00005 and 2.5
+    function getRandomBalance() {
+      var min = 0.00005;
+      var max = 2.5;
+      return Math.random() * (max - min) + min;
+    }
+  
+    // Update wallet information on the page
+    function updateWalletInfo() {
+      document.getElementById('walletBalance').textContent = formatBalance(wallet.balance) + ' BTC';
+      document.getElementById('walletBalanceUSD').textContent = '(' + formatBalanceToUSD(wallet.balance) + ')';
+    }
+  </script>
+</body>
 </html>
